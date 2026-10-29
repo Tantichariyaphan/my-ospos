@@ -138,5 +138,22 @@ class Database extends Config
             $config['password'] = !getenv('MYSQL_PASSWORD') ? $config['password'] : getenv('MYSQL_PASSWORD');
             $config['database'] = !getenv('MYSQL_DB_NAME') ? $config['database'] : getenv('MYSQL_DB_NAME');
         }
+
+        $databaseUrl = $this->getEnvironmentValue('DATABASE_URL');
+
+        if ($databaseUrl !== null && ENVIRONMENT === 'production') {
+            $this->default['DSN'] = preg_replace('/^postgres(?:ql)?:\/\//i', 'Postgre://', $databaseUrl) ?? $databaseUrl;
+            $this->default['DBDriver'] = 'Postgre';
+            $this->default['pConnect'] = false;
+            $this->default['charset'] = 'utf8';
+            $this->default['schema'] = 'public';
+        }
+    }
+
+    private function getEnvironmentValue(string $key): ?string
+    {
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+
+        return is_string($value) && trim($value) !== '' ? $value : null;
     }
 }

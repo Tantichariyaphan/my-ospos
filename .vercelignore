@@ -1,0 +1,7 @@
+/vendor
+/node_modules
+/tests
+/docker
+/.github
+/writable/cache
+/writable/logs
